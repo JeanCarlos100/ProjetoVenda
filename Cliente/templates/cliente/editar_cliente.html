@@ -1,0 +1,12 @@
+<!-- templates/cliente/editar_cliente.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Editar Cliente</h2>
+  <form method="post" action="{% url 'editar_cliente' cliente.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Salvar Alterações</button>
+  </form>
+  <a href="{% url 'lista_clientes' %}">Voltar para a lista de clientes</a>
+{% endblock %}

@@ -1,0 +1,24 @@
+<!-- produtos/templates/produtos/lista_produtos.html -->
+{% extends 'base.html' %}
+
+{% block title %}Lista de Produtos{% endblock %}
+
+{% block header %}Lista de Produtos{% endblock %}
+
+{% block content %}
+    <ul>
+        {% for produto in produtos %}
+            <li>
+                <strong>{{ produto.nome }}</strong><br>
+                Descrição: {{ produto.descricao }}<br>
+                Preço: R$ {{ produto.preco }}<br>
+                Estoque: {{ produto.estoque }} unidades<br>
+                Marca: {{ produto.marca }}<br>
+                Categoria: {{ produto.categoria.nome }}<br>
+                {% if produto.data_de_vencimento %}
+                    Data de Vencimento: {{ produto.data_de_vencimento|date:"d/m/Y" }}<br>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Visualizar Compras{% endblock %}
+
+{% block content %}
+  <h2>Compras Realizadas</h2>
+  {% for compra in compras %}
+    <h3>Compra em {{ compra.data_compra }}</h3>
+    <ul>
+      {% for item in compra.itemcarrinho_set.all %}
+        <li>{{ item.produto.nome }} - {{ item.quantidade }} unidades</li>
+      {% endfor %}
+    </ul>
+    <p>Valor Total: R$ {{ compra.valor_total }}</p>
+  {% endfor %}
+{% endblock %}

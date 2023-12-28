@@ -1,0 +1,16 @@
+<!-- templates/cliente/lista_clientes.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Lista de Clientes</h2>
+  <ul>
+    {% for cliente in clientes %}
+      <li>
+        {{ cliente.nome }} - {{ cliente.email }} - {{ cliente.telefone }}
+        (<a href="{% url 'editar_cliente' cliente.id %}">Editar</a> |
+        <a href="{% url 'remover_cliente' cliente.id %}">Remover</a>)
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'cadastrar_cliente' %}">Cadastrar novo cliente</a>
+{% endblock %}

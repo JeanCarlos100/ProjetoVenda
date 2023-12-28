@@ -1,0 +1,12 @@
+<!-- templates/cliente/remover_cliente.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Remover Cliente</h2>
+  <p>Você tem certeza de que deseja remover o cliente "{{ cliente.nome }}"?</p>
+  <form method="post" action="{% url 'remover_cliente' cliente.id %}">
+    {% csrf_token %}
+    <button type="submit">Sim, remover</button>
+  </form>
+  <a href="{% url 'lista_clientes' %}">Cancelar</a>
+{% endblock %}
