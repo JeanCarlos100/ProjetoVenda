@@ -1,50 +1,43 @@
-# carrinho/views.py
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 from .models import ItemCarrinho, Compra
-from .forms import SelecaoProdutoForm
-from .models import Produto
-from .forms import SelecaoClienteForm
+from Cliente.models import Cliente
+from produtos.models import Produto
+# Importe a classe MultipleObjectsReturned
+from django.core.exceptions import MultipleObjectsReturned
 
-@login_required
-def selecionar_produtos(request):
+#@receiver(post_save, sender=ItemCarrinho)
+def atualizar_valor_total_compra(sender, instance, **kwargs):
+    try:
+        # Tente obter uma única compra para o cliente
+        compra = Compra.objects.get(cliente=instance.cliente)
+    except Compra.DoesNotExist:
+        # Se não existir, crie uma nova
+        compra = Compra(cliente=instance.cliente)
+    except MultipleObjectsReturned:
+        # Se houver mais de uma compra, pegue a primeira (ou ajuste conforme necessário)
+        compra = Compra.objects.filter(cliente=instance.cliente).first()
+
+    # Atualize o valor total da compra
+    compra.valor_total = sum(item.subtotal for item in ItemCarrinho.objects.filter(cliente=instance.cliente))
+    compra.save()
+
+def adicionar_carrinho(request):
     if request.method == 'POST':
-        form = SelecaoClienteForm(request.POST)
-        if form.is_valid():
-            cliente_selecionado = form.cleaned_data['cliente']
-            # Adicione a lógica necessária para selecionar produtos com base no cliente selecionado
-            return redirect('sua_view_para_exibir_produtos', cliente_id=cliente_selecionado.id)
-    else:
-        form = SelecaoClienteForm()
+        cliente_id = request.POST.get('cliente')
+        produto_id = request.POST.get('produto')
+        quantidade = int(request.POST.get('quantidade', 1))
 
-    return render(request, 'carrinho/selecionar_produtos.html', {'form': form})
+        cliente = Cliente.objects.get(id=cliente_id)
+        produto = Produto.objects.get(id=produto_id)
 
-@login_required
-def selecionar_produtos(request):
-    cliente = request.user.cliente
-    produtos_disponiveis = Produto.objects.filter(disponivel=True)
-    
-    if request.method == 'POST':
-        form = SelecaoProdutoForm(request.POST)
-        if form.is_valid():
-            quantidade = form.cleaned_data['quantidade']
-            produto = form.cleaned_data['produto']
-            
-            # Verifica se já existe um item para esse produto no carrinho
-            item, created = ItemCarrinho.objects.get_or_create(cliente=cliente, produto=produto)
-            
-            # Atualiza a quantidade e salva
-            item.quantidade += quantidade
-            item.save()
+        item_carrinho, created = ItemCarrinho.objects.get_or_create(cliente=cliente, produto=produto)
+        item_carrinho.quantidade += quantidade
+        item_carrinho.save()
 
-            return redirect('selecionar_produtos')
-    else:
-        form = SelecaoProdutoForm(queryset=produtos_disponiveis)
-    
-    return render(request, 'carrinho/selecionar_produtos.html', {'form': form})
+    clientes = Cliente.objects.all()
+    produtos = Produto.objects.all()
+    return render(request, 'carrinho/carrinho_form.html', {'clientes': clientes, 'produtos': produtos})
 
-@login_required
-def visualizar_compras(request):
-    cliente = request.user.cliente
-    compras = Compra.objects.filter(cliente=cliente)
-    return render(request, 'carrinho/visualizar_compras.html', {'compras': compras})
+def listar_compras(request):
+    compras = Compra.objects.all()
+    return render(request, 'carrinho/compra_list.html', {'compras': compras})

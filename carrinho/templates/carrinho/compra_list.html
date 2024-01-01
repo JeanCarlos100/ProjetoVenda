@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  {% block title %}Visualizar Compras{% endblock %}
+  
+    <h1>Compras</h1>
+  <ul>
+    {% for compra in compras %}
+      <li>Cliente: {{ compra.cliente.nome }} - Valor Total: R$ {{ compra.valor_total }}</li>
+    {% endfor %}
+  </ul>
+  {% endblock %}

@@ -1,0 +1,30 @@
+<!-- carrinho/templates/carrinho/selecionar_produtos.html -->
+{% extends 'base.html' %}
+{% block content %}
+
+<form method="post" action="{% url 'adicionar_carrinho' %}">
+  {% csrf_token %}
+  <label for="cliente">Cliente:</label>
+  <select name="cliente">
+    {% for cliente in clientes %}
+      <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
+    {% endfor %}
+  </select>
+  <br>
+
+  <label for="produto">Produto:</label>
+  <select name="produto">
+    {% for produto in produtos %}
+      <option value="{{ produto.id }}">{{ produto.nome }}</option>
+    {% endfor %}
+  </select>
+  <br>
+
+  <label for="quantidade">Quantidade:</label>
+  <input type="number" name="quantidade" value="1">
+  <br>
+
+  <button type="submit">Adicionar ao Carrinho</button>
+</form>
+
+{% endblock %}
